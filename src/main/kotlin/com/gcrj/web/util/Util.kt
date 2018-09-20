@@ -1,12 +1,13 @@
 package com.gcrj.web.util
 
-import com.gcrj.web.bean.UserBean
-import java.sql.Connection
-import java.sql.DriverManager
-import java.sql.SQLException
-import javax.servlet.http.HttpServletRequest
+import com.gcrj.web.bean.ResponseBean
+import com.google.gson.Gson
+import javax.servlet.http.HttpServletResponse
 
-object Util {
-
-
+fun HttpServletResponse.output(responseBean: ResponseBean<*>) {
+    this.contentType = "text/html;charset=utf-8"
+    val out = this.writer
+    out.println(Gson().toJson(responseBean))
+    out.flush()
+    out.close()
 }

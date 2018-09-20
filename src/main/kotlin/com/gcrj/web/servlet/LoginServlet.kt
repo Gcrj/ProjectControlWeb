@@ -1,8 +1,11 @@
 package com.gcrj.web.servlet
 
+import com.gcrj.web.bean.ProjectBean
 import com.gcrj.web.bean.ResponseBean
 import com.gcrj.web.bean.UserBean
+import com.gcrj.web.manager.ProjectManager
 import com.gcrj.web.manager.UserManager
+import com.gcrj.web.util.output
 import com.google.gson.Gson
 import java.io.IOException
 import java.nio.charset.Charset
@@ -39,11 +42,7 @@ class LoginServlet : HttpServlet() {
             }
         }
 
-        response.contentType = "text/html;charset=utf-8"
-        val out = response.writer
-        out.println(Gson().toJson(responseBean))
-        out.flush()
-        out.close()
+        response.output(responseBean)
     }
 
 }

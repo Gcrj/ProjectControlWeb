@@ -4,6 +4,6 @@ class ProjectBean {
 
     var id: Int? = null
     var name: String? = null
-    var create_user: String? = null
+    var create_user: UserBean? = null
 
 }

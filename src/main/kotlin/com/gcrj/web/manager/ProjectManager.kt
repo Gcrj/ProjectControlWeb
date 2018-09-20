@@ -1,6 +1,8 @@
 package com.gcrj.web.manager
 
 import com.gcrj.web.bean.ProjectBean
+import com.gcrj.web.bean.UserBean
+import com.gcrj.web.util.Constant
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
@@ -11,42 +13,29 @@ object ProjectManager {
         Class.forName("org.sqlite.JDBC")
     }
 
+    /**
+     * 用户相关的项目
+     */
     fun query(userId: Int): List<ProjectBean> {
         var conn: Connection? = null
         try {
-            conn = DriverManager.getConnection("jdbc:sqlite:D:/Java/IntellijIdeaWorkSpace/ProjectControlWeb/db/pc_web.db", null, null)
-            val stmt = conn!!.createStatement()
-
-            val rsProjectUser = stmt.executeQuery("select project_id from project_user where user_id = '$userId'")
-            val listProjectId = mutableListOf<Int>()
-            while (rsProjectUser.next()) {
-                listProjectId.add(rsProjectUser.getInt(1))
-            }
-
-            rsProjectUser.close()
-
-            if (listProjectId.isEmpty()) {
-                return emptyList()
-            }
-
-            val sb = StringBuilder("select * from project where _id in ")
-            listProjectId.forEach {
-                sb.append(" ('").append(userId).append("'), ")
-            }
-//            sb.deleteCharAt(sb.lastIndex)
-
-            println(sb.toString())
-
-            val rsProject = stmt.executeQuery(sb.toString())
+            conn = DriverManager.getConnection(Constant.DB_PATH, null, null)
+            val stmt = conn.createStatement()
+            val rs = stmt.executeQuery("select project._id, project.name, user._id, user.username from project, project_user, user where project_user.user_id = $userId and project._id = project_user.project_id and user._id = $userId order by project._id desc")
             val list = mutableListOf<ProjectBean>()
-            while (rsProject.next()) {
+            while (rs.next()) {
                 val projectBean = ProjectBean()
-                projectBean.id = rsProjectUser.getInt(1)
-                projectBean.name = rsProjectUser.getString(2)
+                projectBean.id = rs.getInt(1)
+                projectBean.name = rs.getString(2)
+                val userBean = UserBean()
+                userBean.id = rs.getInt(3)
+                userBean.username = rs.getString(4)
+                projectBean.create_user = userBean
                 list.add(projectBean)
             }
 
-            rsProject.close()
+            rs.close()
+            return list
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {

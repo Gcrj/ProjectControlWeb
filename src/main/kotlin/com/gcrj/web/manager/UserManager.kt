@@ -1,6 +1,9 @@
 package com.gcrj.web.manager
 
+import com.gcrj.web.bean.ProjectBean
+import com.gcrj.web.bean.ResponseBean
 import com.gcrj.web.bean.UserBean
+import com.gcrj.web.util.Constant
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
@@ -16,8 +19,8 @@ object UserManager {
         var userBean: UserBean? = null
         var conn: Connection? = null
         try {
-            conn = DriverManager.getConnection("jdbc:sqlite:D:/Java/IntellijIdeaWorkSpace/ProjectControlWeb/db/pc_web.db", null, null)
-            val stmt = conn!!.createStatement()
+            conn = DriverManager.getConnection(Constant.DB_PATH, null, null)
+            val stmt = conn.createStatement()
             val rs = stmt.executeQuery("select * from user where username = '$username' and password = '$password'")
             if (rs.next()) {
                 userBean = UserBean()
@@ -41,17 +44,20 @@ object UserManager {
         return userBean
     }
 
-    fun tokenVerify(request: HttpServletRequest): UserBean? {
+    fun <T> tokenVerify(request: HttpServletRequest): Pair<ResponseBean<T>, UserBean?> {
+        val responseBean = ResponseBean<T>()
         val token = request.getHeader("token")
         if (token == null || token == "") {
-            return null
+            responseBean.status = 0
+            responseBean.msg = "token错误"
+            return responseBean to null
         }
 
         var userBean: UserBean? = null
         var conn: Connection? = null
         try {
-            conn = DriverManager.getConnection("jdbc:sqlite:D:/Java/IntellijIdeaWorkSpace/ProjectControlWeb/db/pc_web.db", null, null)
-            val stmt = conn!!.createStatement()
+            conn = DriverManager.getConnection(Constant.DB_PATH, null, null)
+            val stmt = conn.createStatement()
 
             // 执行SQL语句
             val rs = stmt.executeQuery("select * from user where token = '$token'")
@@ -61,7 +67,11 @@ object UserManager {
                 userBean.username = rs.getString(2)
                 userBean.token = rs.getString(3)
                 userBean.password = rs.getString(4)
+
+                responseBean.status = 1
             }
+
+            rs.close()
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
@@ -72,7 +82,7 @@ object UserManager {
             }
         }
 
-        return userBean
+        return responseBean to userBean
     }
 
 }
