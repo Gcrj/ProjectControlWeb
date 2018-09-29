@@ -7,4 +7,7 @@ class ActivityRelatedBean {
     var name: String? = null
     var progress: Int? = null
 
+    @Transient
+    var time: String? = null
+
 }

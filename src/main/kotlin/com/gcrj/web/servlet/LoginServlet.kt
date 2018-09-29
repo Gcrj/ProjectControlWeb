@@ -1,12 +1,9 @@
 package com.gcrj.web.servlet
 
-import com.gcrj.web.bean.ProjectBean
 import com.gcrj.web.bean.ResponseBean
 import com.gcrj.web.bean.UserBean
-import com.gcrj.web.manager.ProjectManager
-import com.gcrj.web.manager.UserManager
+import com.gcrj.web.dao.UserDao
 import com.gcrj.web.util.output
-import com.google.gson.Gson
 import java.io.IOException
 import java.nio.charset.Charset
 import javax.servlet.annotation.WebServlet
@@ -28,7 +25,7 @@ class LoginServlet : HttpServlet() {
             responseBean.msg = "用户名密码错误"
         } else {
             val username = String(originUsername.toByteArray(Charset.forName("ISO-8859-1")), Charset.forName("UTF-8"))
-            val userBean = UserManager.query(username, password)
+            val userBean = UserDao.query(username, password)
             if (userBean == null) {
                 responseBean.status = 0
                 responseBean.msg = "用户名密码错误"

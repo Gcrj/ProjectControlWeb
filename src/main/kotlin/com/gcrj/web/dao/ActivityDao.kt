@@ -1,4 +1,4 @@
-package com.gcrj.web.manager
+package com.gcrj.web.dao
 
 import com.gcrj.web.bean.ActivityBean
 import com.gcrj.web.bean.ActivityRelatedBean
@@ -8,7 +8,7 @@ import java.sql.DriverManager
 import java.sql.SQLException
 import java.sql.Statement
 
-object ActivityManager {
+object ActivityDao {
 
     init {
         Class.forName("org.sqlite.JDBC")
@@ -40,11 +40,11 @@ object ActivityManager {
                 val newActivityId = rs.getInt(1)
                 //这个界面新增界面相关
                 list.forEach {
-                    sql = "insert into activity_related (activity_id, name) values('$newActivityId','$it')"
+                    sql = "insert into activity_related (activity_id, name, time) values('$newActivityId','$it', datetime(CURRENT_TIMESTAMP,'localtime'))"
                     conn.prepareStatement(sql).executeUpdate()
                 }
                 conn.close()
-                return true
+                return UtilDao.updateProgress(subProjectId)
             }
 
             conn.close()

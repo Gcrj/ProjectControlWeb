@@ -1,8 +1,8 @@
 package com.gcrj.web.servlet
 
 import com.gcrj.web.bean.ActivityBean
-import com.gcrj.web.manager.ActivityManager
-import com.gcrj.web.manager.UserManager
+import com.gcrj.web.dao.ActivityDao
+import com.gcrj.web.dao.UserDao
 import com.gcrj.web.util.output
 import javax.servlet.ServletException
 import javax.servlet.annotation.WebServlet
@@ -20,7 +20,7 @@ class ActivityServlet : HttpServlet() {
      */
     @Throws(ServletException::class, IOException::class)
     override fun doPost(request: HttpServletRequest, response: HttpServletResponse) {
-        val pair = UserManager.tokenVerify<Nothing>(request)
+        val pair = UserDao.tokenVerify<Nothing>(request)
         val responseBean = pair.first
         if (responseBean.status == 1) {
             val originActivityName = request.getParameter("activityName")
@@ -32,7 +32,7 @@ class ActivityServlet : HttpServlet() {
             } else {
                 val activityName = String(originActivityName.toByteArray(Charset.forName("ISO-8859-1")), Charset.forName("UTF-8"))
                 val activityRelatedName = String(originActivityRelatedName.toByteArray(Charset.forName("ISO-8859-1")), Charset.forName("UTF-8"))
-                if (!ActivityManager.insert(pair.second?.id ?: 0, subProjectId.toIntOrNull()
+                if (!ActivityDao.insert(pair.second?.id ?: 0, subProjectId.toIntOrNull()
                                 ?: 0, activityName, activityRelatedName.split(",").filter { it.trim() != "" })) {
                     responseBean.status == 0
                     responseBean.msg == "插入失败"
@@ -48,7 +48,7 @@ class ActivityServlet : HttpServlet() {
      */
     @Throws(ServletException::class, IOException::class)
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
-        val pair = UserManager.tokenVerify<List<ActivityBean>>(request)
+        val pair = UserDao.tokenVerify<List<ActivityBean>>(request)
         val responseBean = pair.first
         if (responseBean.status == 1) {
             val subProjectId = request.getParameter("subProjectId")
@@ -56,7 +56,7 @@ class ActivityServlet : HttpServlet() {
                 responseBean.status = 0
                 responseBean.msg = "参数有误"
             } else {
-                responseBean.result = ActivityManager.query(subProjectId.toIntOrNull() ?: 0)
+                responseBean.result = ActivityDao.query(subProjectId.toIntOrNull() ?: 0)
             }
         }
 

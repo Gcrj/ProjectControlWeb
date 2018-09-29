@@ -1,17 +1,13 @@
-package com.gcrj.web.manager
+package com.gcrj.web.service
 
 import cn.jiguang.common.ClientConfig
 import cn.jpush.api.push.model.Platform
 import cn.jpush.api.push.model.audience.Audience
 import cn.jpush.api.push.model.PushPayload
 import cn.jpush.api.push.model.notification.Notification
-import sun.security.krb5.internal.Krb5.getErrorMessage
-import java.awt.SystemColor.info
 import cn.jiguang.common.resp.APIRequestException
 import cn.jiguang.common.resp.APIConnectionException
-import cn.jpush.api.push.PushResult
 import cn.jpush.api.JPushClient
-import org.jetbrains.annotations.TestOnly
 
 
 object PushService {

@@ -1,11 +1,9 @@
 package com.gcrj.web.servlet
 
 import com.gcrj.web.bean.ProjectBean
-import com.gcrj.web.bean.ResponseBean
-import com.gcrj.web.manager.ProjectManager
-import com.gcrj.web.manager.UserManager
+import com.gcrj.web.dao.ProjectDao
+import com.gcrj.web.dao.UserDao
 import com.gcrj.web.util.output
-import com.google.gson.Gson
 import javax.servlet.ServletException
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServlet
@@ -23,10 +21,10 @@ class ProjectServlet : HttpServlet() {
 
     @Throws(ServletException::class, IOException::class)
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
-        val pair = UserManager.tokenVerify<List<ProjectBean>>(request)
+        val pair = UserDao.tokenVerify<List<ProjectBean>>(request)
         val responseBean = pair.first
         if (responseBean.status == 1) {
-            responseBean.result = ProjectManager.query(pair.second?.id ?: 0)
+            responseBean.result = ProjectDao.query(pair.second?.id ?: 0)
         }
 
         response.output(responseBean)

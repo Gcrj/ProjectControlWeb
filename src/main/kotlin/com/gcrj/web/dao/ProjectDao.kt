@@ -1,4 +1,4 @@
-package com.gcrj.web.manager
+package com.gcrj.web.dao
 
 import com.gcrj.web.bean.ProjectBean
 import com.gcrj.web.bean.UserBean
@@ -7,7 +7,7 @@ import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
 
-object ProjectManager {
+object ProjectDao {
 
     init {
         Class.forName("org.sqlite.JDBC")
