@@ -6,7 +6,6 @@ class ProjectBean {
     var name: String? = null
     var create_user: UserBean? = null
 
-    @Transient
     var subProject: List<SubProjectBean>? = null
 
 }

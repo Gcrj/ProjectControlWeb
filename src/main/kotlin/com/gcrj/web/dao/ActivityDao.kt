@@ -40,7 +40,7 @@ object ActivityDao {
                 val newActivityId = rs.getInt(1)
                 //这个界面新增界面相关
                 list.forEach {
-                    sql = "insert into activity_related (activity_id, name, time) values('$newActivityId','$it', datetime(CURRENT_TIMESTAMP,'localtime'))"
+                    sql = "insert into activity_related (activity_id, name) values('$newActivityId','$it')"
                     conn.prepareStatement(sql).executeUpdate()
                 }
                 conn.close()

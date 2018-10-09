@@ -7,7 +7,6 @@ class SubProjectBean {
     var name: String? = null
     var progress: Int? = null
 
-    @Transient
     var activity: List<ActivityBean>? = null
 
 }

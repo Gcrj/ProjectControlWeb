@@ -152,28 +152,32 @@
       <NotNull>1</NotNull>
       <DefaultExpression>0</DefaultExpression>
     </column>
-    <key id="44" parent="12">
+    <column id="44" parent="12" name="deadline">
+      <Position>5</Position>
+      <DataType>DATETIME|0s</DataType>
+    </column>
+    <key id="45" parent="12">
       <ColNames>_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="45" parent="13" name="_id">
+    <column id="46" parent="13" name="_id">
       <Position>1</Position>
       <DataType>INTEGER|0s</DataType>
       <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="46" parent="13" name="username">
+    <column id="47" parent="13" name="username">
       <Position>2</Position>
       <DataType>TEXT|0s</DataType>
     </column>
-    <column id="47" parent="13" name="password">
+    <column id="48" parent="13" name="password">
       <Position>3</Position>
       <DataType>TEXT|0s</DataType>
     </column>
-    <column id="48" parent="13" name="token">
+    <column id="49" parent="13" name="token">
       <Position>4</Position>
       <DataType>TEXT|0s</DataType>
     </column>
-    <key id="49" parent="13">
+    <key id="50" parent="13">
       <ColNames>_id</ColNames>
       <Primary>1</Primary>
     </key>

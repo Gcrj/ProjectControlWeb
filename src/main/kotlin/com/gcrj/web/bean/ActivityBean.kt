@@ -7,6 +7,5 @@ class ActivityBean {
     var name: String? = null
     var progress: Int? = null
 
-    @Transient
     var activityRelated: List<ActivityRelatedBean>? = null
 }

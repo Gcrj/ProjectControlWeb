@@ -15,7 +15,7 @@ object SubProjectDao {
     /**
      * 增加子项目
      */
-    fun insert(projectId: Int, name: String, userId: Int): Boolean {
+    fun insert(projectId: Int, name: String, deadline: String, userId: Int): Boolean {
         var conn: Connection? = null
         try {
             conn = DriverManager.getConnection(Constant.DB_PATH, null, null)
@@ -28,7 +28,7 @@ object SubProjectDao {
             }
             rsProject.close()
 
-            val sql = "insert into sub_project (project_id,name) values('$projectId','$name')"
+            val sql = "insert into sub_project (project_id, name, deadline) values('$projectId', '$name', '$deadline')"
             conn.prepareStatement(sql).executeUpdate()
             conn.close()
             return true

@@ -27,17 +27,17 @@ class SubProjectServlet : HttpServlet() {
             if (responseBean.status == 1) {
                 val originName = request.getParameter("name")
                 val projectId = request.getParameter("projectId")
-                if (originName == null || projectId == null) {
+                val deadline = request.getParameter("deadline")
+                if (originName == null || projectId == null || deadline == null) {
                     responseBean.status = 0
                     responseBean.msg = "参数有误"
                 } else {
                     val name = String(originName.toByteArray(Charset.forName("ISO-8859-1")), Charset.forName("UTF-8"))
-                    if (!SubProjectDao.insert(projectId.toIntOrNull() ?: 0, name, pair.second?.id ?: 0)) {
+                    if (!SubProjectDao.insert(projectId.toIntOrNull() ?: 0, name, deadline, pair.second?.id ?: 0)) {
                         responseBean.status == 0
                         responseBean.msg == "插入失败"
                     }
                 }
-
             }
 
             response.output(responseBean)
