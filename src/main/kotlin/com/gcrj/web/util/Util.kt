@@ -2,7 +2,9 @@ package com.gcrj.web.util
 
 import com.gcrj.web.bean.ProjectBean
 import com.gcrj.web.bean.ResponseBean
+import com.gcrj.web.bean.XlsProjectBean
 import com.google.gson.Gson
+import org.apache.poi.ss.usermodel.BorderStyle
 import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.HorizontalAlignment
 import org.apache.poi.ss.usermodel.VerticalAlignment
@@ -18,7 +20,7 @@ import java.util.*
 import javax.servlet.http.HttpServletResponse
 
 fun HttpServletResponse.output(responseBean: ResponseBean<*>) {
-    this.contentType = "text/html;charset=utf-8"
+    this.contentType = "application/json;charset=utf-8"
     val out = this.writer
     out.println(Gson().toJson(responseBean))
     out.flush()
@@ -28,6 +30,10 @@ fun HttpServletResponse.output(responseBean: ResponseBean<*>) {
 fun XSSFWorkbook.createStyle(horizontalAlignment: HorizontalAlignment? = HorizontalAlignment.CENTER, verticalAlignment: VerticalAlignment? = VerticalAlignment.CENTER, foregroundColor: Color? = null,
                              fontName: String = "微软雅黑", fontHeightInPoints: Short? = null, bold: Boolean = false, fontColor: Color? = null): XSSFCellStyle? {
     val style = createCellStyle()
+    style.setBorderLeft(BorderStyle.THIN)
+    style.setBorderTop(BorderStyle.THIN)
+    style.setBorderRight(BorderStyle.THIN)
+    style.setBorderBottom(BorderStyle.THIN)
     style.setAlignment(horizontalAlignment)
     style.setVerticalAlignment(verticalAlignment)
     foregroundColor?.apply {
@@ -51,7 +57,7 @@ fun XSSFWorkbook.createStyle(horizontalAlignment: HorizontalAlignment? = Horizon
     return style
 }
 
-fun createXls(list: List<ProjectBean>, os: OutputStream) {
+fun createXls(list: List<XlsProjectBean>, os: OutputStream) {
     val workbook = XSSFWorkbook()
     val sheet = workbook.createSheet("执行力")
     sheet.defaultColumnWidth = 40
@@ -93,46 +99,77 @@ fun createXls(list: List<ProjectBean>, os: OutputStream) {
 
     var index = 2
     list.forEach { project ->
-        project.subProject?.forEach { subProject ->
-            row = sheet.createRow(index)
-            cell = row.createCell(0)
-            cell.setCellValue("${project.name}(${subProject.name})")
-            cell.cellStyle = workbook.createStyle(fontHeightInPoints = 10)
+        when (project.type) {
+            XlsProjectBean.TYPE_PROJECT -> {
+                project.subProject?.forEach { subProject ->
+                    row = sheet.createRow(index)
+                    cell = row.createCell(0)
+                    cell.setCellValue("${project.name}(${subProject.name})")
+                    cell.cellStyle = workbook.createStyle(foregroundColor = Color(221, 235, 247), fontHeightInPoints = 10)
+                    cell = row.createCell(1)
+                    cell.cellStyle = workbook.createStyle(fontHeightInPoints = 10)
+                    cell.setCellValue(subProject.deadline)
+                    cell = row.createCell(2)
+                    cell.cellStyle = workbook.createStyle()
+                    cell = row.createCell(3)
+                    cell.setCellValue("发版")
+                    cell.cellStyle = workbook.createStyle(fontHeightInPoints = 10)
 
-            val completePercent = "完成度${subProject.progress}%"
-            val richTextString = XSSFRichTextString()
-            richTextString.append(completePercent)
-            subProject.activity?.forEach { activity ->
-                richTextString.append("\r\n")
-                richTextString.append(activity.name)
-                richTextString.append(" 完成度")
-                richTextString.append(activity.progress?.toString())
-                richTextString.append("%")
-                activity.activityRelated?.forEach { activityRelated ->
-                    richTextString.append("\r\n")
-                    richTextString.append("    ——")
-                    richTextString.append(activityRelated.name)
-                    richTextString.append(" 完成度")
-                    richTextString.append(activityRelated.progress?.toString())
-                    richTextString.append("%")
+                    val completePercent = "完成度${subProject.progress}%"
+                    val richTextString = XSSFRichTextString()
+                    richTextString.append(completePercent)
+                    subProject.activity?.forEach { activity ->
+                        richTextString.append("\r\n")
+                        richTextString.append(activity.name)
+                        richTextString.append(" 完成度")
+                        richTextString.append(activity.progress?.toString())
+                        richTextString.append("%")
+                        activity.activityRelated?.forEach { activityRelated ->
+                            richTextString.append("\r\n")
+                            richTextString.append("    ——")
+                            richTextString.append(activityRelated.name)
+                            richTextString.append(" 完成度")
+                            richTextString.append(activityRelated.progress?.toString())
+                            richTextString.append("%")
+                        }
+                    }
+                    val font = workbook.createFont()
+                    font.fontHeightInPoints = 10
+                    font.fontName = "微软雅黑"
+                    richTextString.applyFont(font)
+
+                    val boldFont = workbook.createFont()
+                    boldFont.fontHeightInPoints = 10
+                    boldFont.fontName = "微软雅黑"
+                    boldFont.bold = true
+                    richTextString.applyFont(0, completePercent.length, boldFont)
+
+                    cell = row.createCell(4)
+                    cell.setCellValue(richTextString)
+                    cell.cellStyle = workbook.createStyle(horizontalAlignment = HorizontalAlignment.LEFT, fontHeightInPoints = 10)
+
+                    index++
                 }
             }
-            val font = workbook.createFont()
-            font.fontHeightInPoints = 10
-            font.fontName = "微软雅黑"
-            richTextString.applyFont(font)
+            XlsProjectBean.TYPE_CUSTOM -> {
+                row = sheet.createRow(index)
+                cell = row.createCell(0)
+                cell.setCellValue(project.title)
+                cell.cellStyle = workbook.createStyle(foregroundColor = Color(221, 235, 247), fontHeightInPoints = 10)
+                val emptyStyle = workbook.createStyle(fontHeightInPoints = 10)
+                cell = row.createCell(1)
+                cell.cellStyle = emptyStyle
+                cell = row.createCell(2)
+                cell.cellStyle = emptyStyle
+                cell = row.createCell(3)
+                cell.cellStyle = emptyStyle
 
-            val boldFont = workbook.createFont()
-            boldFont.fontHeightInPoints = 10
-            boldFont.fontName = "微软雅黑"
-            boldFont.bold = true
-            richTextString.applyFont(0, completePercent.length, boldFont)
+                cell = row.createCell(4)
+                cell.setCellValue(project.content)
+                cell.cellStyle = workbook.createStyle(horizontalAlignment = HorizontalAlignment.LEFT, fontHeightInPoints = 10)
 
-            cell = row.createCell(4)
-            cell.setCellValue(richTextString)
-            cell.cellStyle = workbook.createStyle(horizontalAlignment = HorizontalAlignment.LEFT, fontHeightInPoints = 10)
-
-            index++
+                index++
+            }
         }
     }
 

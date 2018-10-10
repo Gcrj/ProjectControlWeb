@@ -127,8 +127,4 @@ object ActivityRelatedDao {
         return emptyList()
     }
 
-    fun getXls(userId: Int, os: OutputStream) {
-        createXls(UtilDao.queryAllInfo(userId), os)
-    }
-
 }

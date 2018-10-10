@@ -1,6 +1,6 @@
 package com.gcrj.web.bean
 
-class ProjectBean {
+open class ProjectBean {
 
     var id: Int? = null
     var name: String? = null

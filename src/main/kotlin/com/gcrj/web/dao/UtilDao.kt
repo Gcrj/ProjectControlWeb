@@ -74,7 +74,7 @@ object UtilDao {
 //            val monday = SimpleDateFormat("yyyy-MM-dd").format(calendar.time)
 //            calendar.timeInMillis += 7 * 24 * 60 * 60 * 1000
 //            val nextMonday = SimpleDateFormat("yyyy-MM-dd").format(calendar.time)
-            val rs = stmt.executeQuery("select project._id, project.name, sub_project._id, sub_project.name, sub_project.progress, activity._id, activity.name, activity.progress, activity_related._id, activity_related.name, activity_related.progress " +
+            val rs = stmt.executeQuery("select project._id, project.name, sub_project._id, sub_project.name, sub_project.progress, sub_project.deadline, activity._id, activity.name, activity.progress, activity_related._id, activity_related.name, activity_related.progress " +
                     "from project, project_user, sub_project, activity, activity_related " +
                     "where project_user.user_id = '$userId' and project_user.project_id = sub_project.project_id and project._id = sub_project.project_id and activity.sub_project_id = sub_project._id " +
                     "and activity_related.activity_id = activity._id " +
@@ -87,7 +87,7 @@ object UtilDao {
             while (rs.next()) {
                 val projectId = rs.getInt(1)
                 val subProjectId = rs.getInt(3)
-                val activityId = rs.getInt(6)
+                val activityId = rs.getInt(7)
                 if (projectId != lastProjectId) {
                     val project = ProjectBean()
                     project.id = projectId
@@ -99,20 +99,21 @@ object UtilDao {
                     subProject.id = subProjectId
                     subProject.name = rs.getString(4)
                     subProject.progress = rs.getInt(5)
+                    subProject.deadline = rs.getString(6)
                     subProject.activity = mutableListOf()
                     (project.subProject as MutableList).add(subProject)
 
                     val activity = ActivityBean()
                     activity.id = activityId
-                    activity.name = rs.getString(7)
-                    activity.progress = rs.getInt(8)
+                    activity.name = rs.getString(8)
+                    activity.progress = rs.getInt(9)
                     activity.activityRelated = mutableListOf()
                     (subProject.activity as MutableList).add(activity)
 
                     val activityRelated = ActivityRelatedBean()
-                    activityRelated.id = rs.getInt(9)
-                    activityRelated.name = rs.getString(10)
-                    activityRelated.progress = rs.getInt(11)
+                    activityRelated.id = rs.getInt(10)
+                    activityRelated.name = rs.getString(11)
+                    activityRelated.progress = rs.getInt(12)
                     (activity.activityRelated as MutableList).add(activityRelated)
                 } else {
                     if (subProjectId != lastSubProjectId) {
@@ -120,40 +121,41 @@ object UtilDao {
                         subProject.id = subProjectId
                         subProject.name = rs.getString(4)
                         subProject.progress = rs.getInt(5)
+                        subProject.deadline = rs.getString(6)
                         subProject.activity = mutableListOf()
                         (list.last().subProject as MutableList).add(subProject)
 
                         val activity = ActivityBean()
                         activity.id = activityId
-                        activity.name = rs.getString(7)
-                        activity.progress = rs.getInt(8)
+                        activity.name = rs.getString(8)
+                        activity.progress = rs.getInt(9)
                         activity.activityRelated = mutableListOf()
                         (subProject.activity as MutableList).add(activity)
 
                         val activityRelated = ActivityRelatedBean()
-                        activityRelated.id = rs.getInt(9)
-                        activityRelated.name = rs.getString(10)
-                        activityRelated.progress = rs.getInt(11)
+                        activityRelated.id = rs.getInt(10)
+                        activityRelated.name = rs.getString(11)
+                        activityRelated.progress = rs.getInt(12)
                         (activity.activityRelated as MutableList).add(activityRelated)
                     } else {
                         if (activityId != lastActivityId) {
                             val activity = ActivityBean()
                             activity.id = activityId
-                            activity.name = rs.getString(7)
-                            activity.progress = rs.getInt(8)
+                            activity.name = rs.getString(8)
+                            activity.progress = rs.getInt(9)
                             activity.activityRelated = mutableListOf()
                             (list.last().subProject!!.last().activity as MutableList).add(activity)
 
                             val activityRelated = ActivityRelatedBean()
-                            activityRelated.id = rs.getInt(9)
-                            activityRelated.name = rs.getString(10)
-                            activityRelated.progress = rs.getInt(11)
+                            activityRelated.id = rs.getInt(10)
+                            activityRelated.name = rs.getString(11)
+                            activityRelated.progress = rs.getInt(12)
                             (activity.activityRelated as MutableList).add(activityRelated)
                         } else {
                             val activityRelated = ActivityRelatedBean()
-                            activityRelated.id = rs.getInt(9)
-                            activityRelated.name = rs.getString(10)
-                            activityRelated.progress = rs.getInt(11)
+                            activityRelated.id = rs.getInt(10)
+                            activityRelated.name = rs.getString(11)
+                            activityRelated.progress = rs.getInt(12)
                             (list.last().subProject!!.last().activity!!.last().activityRelated as MutableList).add(activityRelated)
                         }
                     }

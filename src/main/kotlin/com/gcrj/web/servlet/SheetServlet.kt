@@ -2,6 +2,7 @@ package com.gcrj.web.servlet
 
 import com.gcrj.web.bean.ActivityRelatedBean
 import com.gcrj.web.bean.ProjectBean
+import com.gcrj.web.bean.XlsProjectBean
 import com.gcrj.web.dao.ActivityRelatedDao
 import com.gcrj.web.dao.UserDao
 import com.gcrj.web.dao.UtilDao
@@ -76,7 +77,7 @@ class SheetServlet : HttpServlet() {
                         response.output(responseBean)
                     } else {
                         try {
-                            val list = Gson().fromJson<List<ProjectBean>>(sb.toString(), object : TypeToken<List<ProjectBean>>() {}.type)
+                            val list = Gson().fromJson<List<XlsProjectBean>>(sb.toString(), object : TypeToken<List<XlsProjectBean>>() {}.type)
                             response.contentType = "application/octet-stream"
                             val fileName = URLEncoder.encode("Tech3-周报-${pair.second?.username}_${SimpleDateFormat("yyMMdd").format(Date())}.xlsx", "utf-8")
                             response.addHeader("Content-Disposition", "attachment;filename=$fileName")
@@ -121,7 +122,7 @@ class SheetServlet : HttpServlet() {
                         response.output(responseBean)
                     } else {
                         try {
-                            val list = Gson().fromJson<List<ProjectBean>>(sb.toString(), object : TypeToken<List<ProjectBean>>() {}.type)
+                            val list = Gson().fromJson<List<XlsProjectBean>>(sb.toString(), object : TypeToken<List<XlsProjectBean>>() {}.type)
                             val path = this::class.java.classLoader.getResource("").path
                             val dir = File("${path.substring(1, path.indexOf("build"))}xls")
                             if (!dir.exists()) {
