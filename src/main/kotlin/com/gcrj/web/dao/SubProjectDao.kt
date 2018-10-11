@@ -62,6 +62,8 @@ object SubProjectDao {
                 subProjectBean.project_id = rs.getInt(2)
                 subProjectBean.name = rs.getString(3)
                 subProjectBean.progress = rs.getInt(4)
+                subProjectBean.deadline = rs.getString(5)
+                subProjectBean.completionTime = rs.getString(6)
                 list.add(subProjectBean)
             }
 
@@ -96,6 +98,8 @@ object SubProjectDao {
                 subProjectBean.project_id = rs.getInt(2)
                 subProjectBean.name = rs.getString(3)
                 subProjectBean.progress = rs.getInt(4)
+                subProjectBean.deadline = rs.getString(5)
+                subProjectBean.completionTime = rs.getString(6)
                 list.add(subProjectBean)
             }
 

@@ -72,9 +72,9 @@ fun createXls(list: List<XlsProjectBean>, os: OutputStream) {
 
     cell = row.createCell(2)
     val calendar = Calendar.getInstance()
-    calendar.set(Calendar.DAY_OF_WEEK, 2)
+    calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
     val monday = SimpleDateFormat("yyyy-MM-dd").format(calendar.time)
-    calendar.timeInMillis += 4 * 24 * 60 * 60 * 1000
+    calendar.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY)
     val friday = SimpleDateFormat("yyyy-MM-dd").format(calendar.time)
     cell.setCellValue("日期：$monday～$friday")
     cell.cellStyle = workbook.createStyle(foregroundColor = Color(242, 242, 242), fontName = "宋体", fontHeightInPoints = 10, bold = true)
@@ -107,9 +107,10 @@ fun createXls(list: List<XlsProjectBean>, os: OutputStream) {
                     cell.setCellValue("${project.name}(${subProject.name})")
                     cell.cellStyle = workbook.createStyle(foregroundColor = Color(221, 235, 247), fontHeightInPoints = 10)
                     cell = row.createCell(1)
-                    cell.cellStyle = workbook.createStyle(fontHeightInPoints = 10)
                     cell.setCellValue(subProject.deadline)
+                    cell.cellStyle = workbook.createStyle(fontHeightInPoints = 10)
                     cell = row.createCell(2)
+                    cell.setCellValue(subProject.completionTime)
                     cell.cellStyle = workbook.createStyle()
                     cell = row.createCell(3)
                     cell.setCellValue("发版")
