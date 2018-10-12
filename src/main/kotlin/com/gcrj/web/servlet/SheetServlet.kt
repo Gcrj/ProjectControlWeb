@@ -65,7 +65,7 @@ class SheetServlet : HttpServlet() {
                         }
                     } catch (e: Exception) {
                         responseBean.status = 0
-                        responseBean.msg = "参数有误"
+                        responseBean.msg = e.message ?: "未知错误"
                         response.output(responseBean)
                     } finally {
                         inputStream.close()
@@ -87,7 +87,7 @@ class SheetServlet : HttpServlet() {
                             out.close()
                         } catch (e: Exception) {
                             responseBean.status = 0
-                            responseBean.msg = "参数有误"
+                            responseBean.msg = e.message ?: "未知错误"
                             response.output(responseBean)
                         }
                     }
@@ -110,7 +110,7 @@ class SheetServlet : HttpServlet() {
                         }
                     } catch (e: Exception) {
                         responseBean.status = 0
-                        responseBean.msg = "参数有误"
+                        responseBean.msg = e.message ?: "未知错误"
                         response.output(responseBean)
                     } finally {
                         inputStream.close()
@@ -143,7 +143,7 @@ class SheetServlet : HttpServlet() {
                             response.output(responseBean)
                         } catch (e: Exception) {
                             responseBean.status = 0
-                            responseBean.msg = "参数有误"
+                            responseBean.msg = e.message ?: "未知错误"
                             response.output(responseBean)
                         }
                     }

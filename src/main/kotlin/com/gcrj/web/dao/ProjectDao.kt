@@ -19,9 +19,9 @@ object ProjectDao {
     fun query(userId: Int): List<ProjectBean> {
         var conn: Connection? = null
         try {
-            conn = DriverManager.getConnection(Constant.DB_PATH, null, null)
+            conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
             val stmt = conn.createStatement()
-            val rs = stmt.executeQuery("select project._id, project.name, user._id, user.username from project, project_user, user where project_user.user_id = $userId and project._id = project_user.project_id and user._id = $userId order by project._id desc")
+            val rs = stmt.executeQuery("select project._id, project.name, project.create_user, user.username from project, project_user, user where project_user.user_id = '$userId' and project._id = project_user.project_id and user._id = project.create_user order by project._id desc")
             val list = mutableListOf<ProjectBean>()
             while (rs.next()) {
                 val projectBean = ProjectBean()

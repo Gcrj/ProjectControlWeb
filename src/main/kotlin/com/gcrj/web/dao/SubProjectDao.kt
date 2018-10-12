@@ -18,7 +18,7 @@ object SubProjectDao {
     fun insert(projectId: Int, name: String, deadline: String, userId: Int): Boolean {
         var conn: Connection? = null
         try {
-            conn = DriverManager.getConnection(Constant.DB_PATH, null, null)
+            conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
             val stmt = conn.createStatement()
             val rsProject = stmt.executeQuery("select * from project, project_user where project_id = $projectId and project_user.user_id=$userId")
             rsProject.use {
@@ -51,7 +51,7 @@ object SubProjectDao {
     fun queryByUser(userId: Int): List<SubProjectBean> {
         var conn: Connection? = null
         try {
-            conn = DriverManager.getConnection(Constant.DB_PATH, null, null)
+            conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
             val stmt = conn.createStatement()
             val rs = stmt.executeQuery("select sub_project.* from sub_project, project_user" +
                     " where project_user.user_id = $userId and project_user.project_id = sub_project.project_id order by sub_project._id desc")
@@ -88,7 +88,7 @@ object SubProjectDao {
     fun queryByProject(projectId: Int): List<SubProjectBean> {
         var conn: Connection? = null
         try {
-            conn = DriverManager.getConnection(Constant.DB_PATH, null, null)
+            conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
             val stmt = conn.createStatement()
             val rs = stmt.executeQuery("select * from sub_project where project_id = $projectId order by _id desc")
             val list = mutableListOf<SubProjectBean>()

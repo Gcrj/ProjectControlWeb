@@ -2,19 +2,9 @@ package com.gcrj.web.dao
 
 import com.gcrj.web.bean.*
 import com.gcrj.web.util.Constant
-import com.gcrj.web.util.createStyle
-import com.gcrj.web.util.createXls
-import org.apache.poi.ss.usermodel.HorizontalAlignment
-import org.apache.poi.ss.util.CellRangeAddress
-import org.apache.poi.xssf.usermodel.XSSFRichTextString
-import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import java.awt.Color
-import java.io.OutputStream
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
-import java.text.SimpleDateFormat
-import java.util.*
 
 object ActivityRelatedDao {
 
@@ -32,7 +22,7 @@ object ActivityRelatedDao {
 
         var conn: Connection? = null
         try {
-            conn = DriverManager.getConnection(Constant.DB_PATH, null, null)
+            conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
             val stmt = conn.createStatement()
             //查有这个子项目
             val rsSubProject = stmt.executeQuery("select * from sub_project where _id = $subProjectId")
@@ -73,7 +63,7 @@ object ActivityRelatedDao {
 
         var conn: Connection? = null
         try {
-            conn = DriverManager.getConnection(Constant.DB_PATH, null, null)
+            conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
             val ps = conn.prepareStatement("update activity_related set progress = ? WHERE _id = ?")
             list.forEach {
                 ps.setInt(1, it.progress ?: 0)
@@ -99,9 +89,9 @@ object ActivityRelatedDao {
     fun query(activityId: Int): List<ActivityRelatedBean> {
         var conn: Connection? = null
         try {
-            conn = DriverManager.getConnection(Constant.DB_PATH, null, null)
+            conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
             val stmt = conn.createStatement()
-            val rs = stmt.executeQuery("select * from activity_related where activity_id = $activityId order by _id desc")
+            val rs = stmt.executeQuery("select * from activity_related where activity_id = $activityId order by _id asc")
             val list = mutableListOf<ActivityRelatedBean>()
             while (rs.next()) {
                 val activityRelatedBean = ActivityRelatedBean()

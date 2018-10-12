@@ -2,15 +2,6 @@ package com.gcrj.web.dao
 
 import com.gcrj.web.bean.*
 import com.gcrj.web.util.Constant
-import com.gcrj.web.util.createStyle
-import org.apache.poi.ss.usermodel.HorizontalAlignment
-import org.apache.poi.ss.util.CellRangeAddress
-import org.apache.poi.xssf.usermodel.XSSFRichTextString
-import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import java.awt.Color
-import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStream
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
@@ -23,14 +14,13 @@ object UtilDao {
         Class.forName("org.sqlite.JDBC")
     }
 
-
     /**
      * 更新子项目、界面和界面相关进度
      */
     fun updateProgress(subProjectId: Int): Boolean {
         var conn: Connection? = null
         try {
-            conn = DriverManager.getConnection(Constant.DB_PATH, null, null)
+            conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
             var stmt = conn.createStatement()
             var rs = stmt.executeQuery("select activity._id, avg(activity_related.progress) from activity, activity_related where activity.sub_project_id = '$subProjectId' and activity_related.activity_id = activity._id group by activity._id")
             while (rs.next()) {
@@ -69,7 +59,7 @@ object UtilDao {
         val list = mutableListOf<ProjectBean>()
         var conn: Connection? = null
         try {
-            conn = DriverManager.getConnection(Constant.DB_PATH, null, null)
+            conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
             val stmt = conn.createStatement()
 //            val calendar = Calendar.getInstance()
 //            calendar.set(Calendar.DAY_OF_WEEK, 2)
@@ -81,7 +71,7 @@ object UtilDao {
                     "where project_user.user_id = '$userId' and project_user.project_id = sub_project.project_id and project._id = sub_project.project_id and activity.sub_project_id = sub_project._id " +
                     "and activity_related.activity_id = activity._id " +
 //                    " and activity_related.time between '$monday' and '$nextMonday'" +
-                    "order by project._id desc, sub_project._id desc, activity._id desc, activity_related._id desc")
+                    "order by project._id asc, sub_project._id asc, activity._id asc, activity_related._id asc")
 
             var lastProjectId = 0
             var lastSubProjectId = 0

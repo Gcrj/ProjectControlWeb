@@ -111,7 +111,7 @@ fun createXls(list: List<XlsProjectBean>, os: OutputStream) {
                     cell.cellStyle = workbook.createStyle(fontHeightInPoints = 10)
                     cell = row.createCell(2)
                     cell.setCellValue(subProject.completionTime)
-                    cell.cellStyle = workbook.createStyle()
+                    cell.cellStyle = workbook.createStyle(fontHeightInPoints = 10)
                     cell = row.createCell(3)
                     cell.setCellValue("发版")
                     cell.cellStyle = workbook.createStyle(fontHeightInPoints = 10)

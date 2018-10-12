@@ -18,7 +18,7 @@ object UserDao {
         var userBean: UserBean? = null
         var conn: Connection? = null
         try {
-            conn = DriverManager.getConnection(Constant.DB_PATH, null, null)
+            conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
             val stmt = conn.createStatement()
             val rs = stmt.executeQuery("select * from user where username = '$username' and password = '$password'")
             if (rs.next()) {
@@ -51,7 +51,7 @@ object UserDao {
             var userBean: UserBean? = null
             var conn: Connection? = null
             try {
-                conn = DriverManager.getConnection(Constant.DB_PATH, null, null)
+                conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
                 val stmt = conn.createStatement()
 
                 // 执行SQL语句
@@ -91,7 +91,7 @@ object UserDao {
         var userBean: UserBean? = null
         var conn: Connection? = null
         try {
-            conn = DriverManager.getConnection(Constant.DB_PATH, null, null)
+            conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
             val stmt = conn.createStatement()
 
             // 执行SQL语句

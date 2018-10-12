@@ -28,6 +28,8 @@ import org.apache.poi.xssf.usermodel.*
 import java.awt.Color
 import javax.swing.text.StyledEditorKit
 import kotlin.math.roundToInt
+import java.net.InetAddress
+import java.net.UnknownHostException
 
 
 /**
@@ -63,10 +65,10 @@ class Test {
 
 //        ActivityRelatedDao.getXls(1)
 
-//        println(Constant.DB_PATH)
+//        println(Constant.WEB_DB_PATH)
 
-        val f = 1.53F
-        println(f.toInt())
+//        val f = 1.53F
+//        println(f.toInt())
     }
 
 }

@@ -20,7 +20,7 @@ object ActivityDao {
     fun insert(userId: Int, subProjectId: Int, activityName: String, list: List<String>): Boolean {
         var conn: Connection? = null
         try {
-            conn = DriverManager.getConnection(Constant.DB_PATH, null, null)
+            conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
             val stmt = conn.createStatement()
             //查有这个子项目
             val rsSubProject = stmt.executeQuery("select * from sub_project where _id = $subProjectId")
@@ -67,9 +67,9 @@ object ActivityDao {
     fun query(subProjectId: Int): List<ActivityBean> {
         var conn: Connection? = null
         try {
-            conn = DriverManager.getConnection(Constant.DB_PATH, null, null)
+            conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
             val stmt = conn.createStatement()
-            val rs = stmt.executeQuery("select * from activity, activity_related where activity.sub_project_id = '$subProjectId' and activity._id = activity_related.activity_id order by activity._id desc")
+            val rs = stmt.executeQuery("select * from activity, activity_related where activity.sub_project_id = '$subProjectId' and activity._id = activity_related.activity_id order by activity._id asc")
             val list = mutableListOf<ActivityBean>()
             var lastActivityId = -1
             while (rs.next()) {
