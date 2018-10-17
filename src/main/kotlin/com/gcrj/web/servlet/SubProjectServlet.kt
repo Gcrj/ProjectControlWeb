@@ -3,7 +3,6 @@ package com.gcrj.web.servlet
 import com.gcrj.web.bean.SubProjectBean
 import com.gcrj.web.dao.SubProjectDao
 import com.gcrj.web.dao.UserDao
-import com.gcrj.web.util.Constant
 import com.gcrj.web.util.output
 import javax.servlet.ServletException
 import javax.servlet.annotation.WebServlet
@@ -52,15 +51,18 @@ class SubProjectServlet : HttpServlet() {
         val pair = UserDao.tokenVerify<List<SubProjectBean>>(request)
         val responseBean = pair.first
         if (responseBean.status == 1) {
-            if (request.requestURI == "/subProjectByUser") {
-                responseBean.result = SubProjectDao.queryByUser(pair.second?.id ?: 0)
-            } else {
-                val projectId = request.getParameter("projectId")
-                if (projectId == null) {
-                    responseBean.status = 0
-                    responseBean.msg = "参数有误"
-                } else {
-                    responseBean.result = SubProjectDao.queryByProject(projectId.toIntOrNull() ?: 0)
+            when (request.requestURI) {
+                "/subProjectByUser" -> responseBean.result = SubProjectDao.queryByUser(pair.second?.id ?: 0)
+                "/subProjectByProject" -> {
+                    val projectId = request.getParameter("projectId")
+                    if (projectId == null) {
+                        responseBean.status = 0
+                        responseBean.msg = "参数有误"
+                    } else {
+                        responseBean.result = SubProjectDao.queryByProject(projectId.toIntOrNull() ?: 0)
+                    }
+                }
+                else -> {
                 }
             }
         }
@@ -72,16 +74,44 @@ class SubProjectServlet : HttpServlet() {
      * 改
      */
     @Throws(ServletException::class, IOException::class)
-    override fun doPut(req: HttpServletRequest?, resp: HttpServletResponse?) {
-        super.doPut(req, resp)
+    override fun doPut(request: HttpServletRequest, response: HttpServletResponse) {
+        val pair = UserDao.tokenVerify<Nothing>(request)
+        val responseBean = pair.first
+        if (responseBean.status == 1) {
+            val id = request.getParameter("id")?.toIntOrNull()
+            val name = request.getParameter("name")
+            val deadline = request.getParameter("deadline")
+            val completionTime = request.getParameter("completionTime")
+            val versionName = request.getParameter("versionName")
+            if (id == null || (name == null && deadline == null && completionTime == null && versionName == null)) {
+                responseBean.status = 0
+                responseBean.msg = "参数有误"
+            } else {
+                SubProjectDao.update(id, name, deadline, completionTime, versionName)
+            }
+        }
+
+        response.output(responseBean)
     }
 
     /**
      * 删
      */
     @Throws(ServletException::class, IOException::class)
-    override fun doDelete(req: HttpServletRequest?, resp: HttpServletResponse?) {
-        super.doDelete(req, resp)
+    override fun doDelete(request: HttpServletRequest, response: HttpServletResponse) {
+        val pair = UserDao.tokenVerify<Nothing>(request)
+        val responseBean = pair.first
+        if (responseBean.status == 1) {
+            val id = request.getParameter("id")?.toIntOrNull()
+            if (id == null) {
+                responseBean.status = 0
+                responseBean.msg = "参数有误"
+            } else {
+                SubProjectDao.delete(id)
+            }
+        }
+
+        response.output(responseBean)
     }
 
 }

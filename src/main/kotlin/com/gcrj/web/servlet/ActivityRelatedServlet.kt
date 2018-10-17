@@ -1,7 +1,6 @@
 package com.gcrj.web.servlet
 
 import com.gcrj.web.bean.ActivityRelatedBean
-import com.gcrj.web.dao.ActivityDao
 import com.gcrj.web.dao.ActivityRelatedDao
 import com.gcrj.web.dao.UserDao
 import com.gcrj.web.util.output
@@ -24,38 +23,41 @@ class ActivityRelatedServlet : HttpServlet() {
         val pair = UserDao.tokenVerify<Nothing>(request)
         val responseBean = pair.first
         if (responseBean.status == 1) {
-            if (request.requestURI == "/updateActivityRelated") {
-                val subProjectId = request.getParameter("subProjectId")
-                val activityRelated = request.getParameter("activityRelated")
-                if (subProjectId == null || activityRelated == null) {
-                    responseBean.status = 0
-                    responseBean.msg = "参数有误"
-                } else {
-                    val list: List<ActivityRelatedBean>?
-                    try {
-                        list = Gson().fromJson<List<ActivityRelatedBean>>(activityRelated, object : TypeToken<List<ActivityRelatedBean>>() {}.type)
-                        if (!ActivityRelatedDao.update(subProjectId.toIntOrNull() ?: 0, list)) {
+            when (request.requestURI) {
+                "/addActivityRelated" -> {
+                    val subProjectId = request.getParameter("subProjectId")
+                    val activityId = request.getParameter("activityId")
+                    val originActivityRelatedName = request.getParameter("activityRelatedName")
+                    if (subProjectId == null || activityId == null || originActivityRelatedName == null || originActivityRelatedName.split(",").none { it.trim() != "" }) {
+                        responseBean.status = 0
+                        responseBean.msg = "参数有误"
+                    } else {
+                        val activityRelatedName = String(originActivityRelatedName.toByteArray(Charset.forName("ISO-8859-1")), Charset.forName("UTF-8"))
+                        if (!ActivityRelatedDao.insert(subProjectId.toIntOrNull() ?: 0, activityId.toIntOrNull()
+                                        ?: 0, activityRelatedName.split(",").filter { it.trim() != "" })) {
                             responseBean.status == 0
                             responseBean.msg == "插入失败"
                         }
-                    } catch (e: JsonParseException) {
-                        responseBean.status = 0
-                        responseBean.msg = "参数有误"
                     }
                 }
-            } else {
-                val subProjectId = request.getParameter("subProjectId")
-                val activityId = request.getParameter("activityId")
-                val originActivityRelatedName = request.getParameter("activityRelatedName")
-                if (subProjectId == null || activityId == null || originActivityRelatedName == null || originActivityRelatedName.split(",").none { it.trim() != "" }) {
-                    responseBean.status = 0
-                    responseBean.msg = "参数有误"
-                } else {
-                    val activityRelatedName = String(originActivityRelatedName.toByteArray(Charset.forName("ISO-8859-1")), Charset.forName("UTF-8"))
-                    if (!ActivityRelatedDao.insert(subProjectId.toIntOrNull() ?: 0, activityId.toIntOrNull()
-                                    ?: 0, activityRelatedName.split(",").filter { it.trim() != "" })) {
-                        responseBean.status == 0
-                        responseBean.msg == "插入失败"
+                "/updateActivityRelated" -> {
+                    val subProjectId = request.getParameter("subProjectId")
+                    val activityRelated = request.getParameter("activityRelated")
+                    if (subProjectId == null || activityRelated == null) {
+                        responseBean.status = 0
+                        responseBean.msg = "参数有误"
+                    } else {
+                        val list: List<ActivityRelatedBean>?
+                        try {
+                            list = Gson().fromJson<List<ActivityRelatedBean>>(activityRelated, object : TypeToken<List<ActivityRelatedBean>>() {}.type)
+                            if (!ActivityRelatedDao.update(subProjectId.toIntOrNull() ?: 0, list)) {
+                                responseBean.status == 0
+                                responseBean.msg == "插入失败"
+                            }
+                        } catch (e: JsonParseException) {
+                            responseBean.status = 0
+                            responseBean.msg = "参数有误"
+                        }
                     }
                 }
             }
@@ -75,6 +77,48 @@ class ActivityRelatedServlet : HttpServlet() {
                 responseBean.msg = "参数有误"
             } else {
                 responseBean.result = ActivityRelatedDao.query(activityId.toIntOrNull() ?: 0)
+            }
+        }
+
+        response.output(responseBean)
+    }
+
+    /**
+     * 改
+     */
+    @Throws(ServletException::class, IOException::class)
+    override fun doPut(request: HttpServletRequest, response: HttpServletResponse) {
+        val pair = UserDao.tokenVerify<Nothing>(request)
+        val responseBean = pair.first
+        if (responseBean.status == 1) {
+            val id = request.getParameter("id")?.toIntOrNull()
+            val name = request.getParameter("name")
+            if (id == null || name == null) {
+                responseBean.status = 0
+                responseBean.msg = "参数有误"
+            } else {
+                ActivityRelatedDao.update(id, name)
+            }
+        }
+
+        response.output(responseBean)
+    }
+
+    /**
+     * 删
+     */
+    @Throws(ServletException::class, IOException::class)
+    override fun doDelete(request: HttpServletRequest, response: HttpServletResponse) {
+        val pair = UserDao.tokenVerify<Nothing>(request)
+        val responseBean = pair.first
+        if (responseBean.status == 1) {
+            val subProjectId = request.getParameter("subProjectId")?.toIntOrNull()
+            val activityRelatedId = request.getParameter("activityRelatedId")?.toIntOrNull()
+            if (subProjectId == null || activityRelatedId == null) {
+                responseBean.status = 0
+                responseBean.msg = "参数有误"
+            } else {
+                ActivityRelatedDao.delete(subProjectId, activityRelatedId)
             }
         }
 

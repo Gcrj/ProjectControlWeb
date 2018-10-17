@@ -117,4 +117,41 @@ object ActivityRelatedDao {
         return emptyList()
     }
 
+    fun update(id: Int, name: String) {
+        var conn: Connection? = null
+        try {
+            conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
+            val ps = conn.prepareStatement("update activity_related set name = '$name' WHERE _id = $id")
+            ps.executeUpdate()
+            ps.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            try {
+                conn?.close()
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun delete(subProjectId: Int, activityRelatedId: Int) {
+        var conn: Connection? = null
+        try {
+            conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
+            val st = conn.createStatement()
+            st.executeUpdate("delete from activity_related where _id = $activityRelatedId")
+            st.close()
+            UtilDao.updateProgress(subProjectId)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            try {
+                conn?.close()
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
 }

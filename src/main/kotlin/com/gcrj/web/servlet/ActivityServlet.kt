@@ -62,4 +62,47 @@ class ActivityServlet : HttpServlet() {
 
         response.output(responseBean)
     }
+
+    /**
+     * 改
+     */
+    @Throws(ServletException::class, IOException::class)
+    override fun doPut(request: HttpServletRequest, response: HttpServletResponse) {
+        val pair = UserDao.tokenVerify<Nothing>(request)
+        val responseBean = pair.first
+        if (responseBean.status == 1) {
+            val id = request.getParameter("id")?.toIntOrNull()
+            val name = request.getParameter("name")
+            if (id == null || name == null) {
+                responseBean.status = 0
+                responseBean.msg = "参数有误"
+            } else {
+                ActivityDao.update(id, name)
+            }
+        }
+
+        response.output(responseBean)
+    }
+
+    /**
+     * 删
+     */
+    @Throws(ServletException::class, IOException::class)
+    override fun doDelete(request: HttpServletRequest, response: HttpServletResponse) {
+        val pair = UserDao.tokenVerify<Nothing>(request)
+        val responseBean = pair.first
+        if (responseBean.status == 1) {
+            val subProjectId = request.getParameter("subProjectId")?.toIntOrNull()
+            val activityId = request.getParameter("activityId")?.toIntOrNull()
+            if (subProjectId == null || activityId == null) {
+                responseBean.status = 0
+                responseBean.msg = "参数有误"
+            } else {
+                ActivityDao.delete(subProjectId, activityId)
+            }
+        }
+
+        response.output(responseBean)
+    }
+
 }

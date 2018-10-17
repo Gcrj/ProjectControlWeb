@@ -104,7 +104,8 @@ fun createXls(list: List<XlsProjectBean>, os: OutputStream) {
                 project.subProject?.forEach { subProject ->
                     row = sheet.createRow(index)
                     cell = row.createCell(0)
-                    cell.setCellValue("${project.name}(${subProject.name})")
+                    val versionName = if (subProject.versionName == null) "" else " ${subProject.versionName}"
+                    cell.setCellValue("${project.name}$versionName(${subProject.name})")
                     cell.cellStyle = workbook.createStyle(foregroundColor = Color(221, 235, 247), fontHeightInPoints = 10)
                     cell = row.createCell(1)
                     cell.setCellValue(subProject.deadline)

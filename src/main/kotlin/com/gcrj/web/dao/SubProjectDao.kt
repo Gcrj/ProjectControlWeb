@@ -53,8 +53,8 @@ object SubProjectDao {
         try {
             conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
             val stmt = conn.createStatement()
-            val rs = stmt.executeQuery("select sub_project.* from sub_project, project_user" +
-                    " where project_user.user_id = $userId and project_user.project_id = sub_project.project_id order by sub_project._id desc")
+            val rs = stmt.executeQuery("select sub_project.*, project.name from sub_project, project_user, project" +
+                    " where project_user.user_id = $userId and project_user.project_id = sub_project.project_id and project._id = sub_project.project_id order by sub_project._id desc")
             val list = mutableListOf<SubProjectBean>()
             while (rs.next()) {
                 val subProjectBean = SubProjectBean()
@@ -64,6 +64,8 @@ object SubProjectDao {
                 subProjectBean.progress = rs.getInt(4)
                 subProjectBean.deadline = rs.getString(5)
                 subProjectBean.completionTime = rs.getString(6)
+                subProjectBean.versionName = rs.getString(7)
+                subProjectBean.projectName = rs.getString(8)
                 list.add(subProjectBean)
             }
 
@@ -90,7 +92,7 @@ object SubProjectDao {
         try {
             conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
             val stmt = conn.createStatement()
-            val rs = stmt.executeQuery("select * from sub_project where project_id = $projectId order by _id desc")
+            val rs = stmt.executeQuery("select sub_project.*, project.name from sub_project, project where project_id = '$projectId'and project._id = '$projectId' order by sub_project._id desc")
             val list = mutableListOf<SubProjectBean>()
             while (rs.next()) {
                 val subProjectBean = SubProjectBean()
@@ -100,6 +102,8 @@ object SubProjectDao {
                 subProjectBean.progress = rs.getInt(4)
                 subProjectBean.deadline = rs.getString(5)
                 subProjectBean.completionTime = rs.getString(6)
+                subProjectBean.versionName = rs.getString(7)
+                subProjectBean.projectName = rs.getString(8)
                 list.add(subProjectBean)
             }
 
@@ -116,6 +120,83 @@ object SubProjectDao {
         }
 
         return emptyList()
+    }
+
+    fun update(id: Int, name: String?, deadline: String?, completionTime: String?, versionName: String?) {
+        var conn: Connection? = null
+        try {
+            conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
+            val sb = StringBuilder()
+            if (name != null) {
+                sb.append(" name = '").append(name).append("'")
+            }
+
+            if (deadline != null) {
+                if (sb.isNotEmpty()) {
+                    sb.append(" ,")
+                }
+
+                sb.append(" deadline = '").append(deadline).append("'")
+            }
+
+            if (completionTime != null) {
+                if (sb.isNotEmpty()) {
+                    sb.append(" ,")
+                }
+
+                sb.append(" completion_time = '").append(completionTime).append("'")
+            }
+
+            if (versionName != null) {
+                if (sb.isNotEmpty()) {
+                    sb.append(" ,")
+                }
+
+                sb.append(" version_name = '").append(versionName).append("'")
+            }
+
+            val ps = conn.prepareStatement("update sub_project set $sb WHERE _id = $id")
+            ps.executeUpdate()
+            ps.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            try {
+                conn?.close()
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun delete(id: Int) {
+        var conn: Connection? = null
+        try {
+            conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
+            val st = conn.createStatement()
+            st.executeUpdate("delete from sub_project where _id = $id")
+
+            val stmt = conn.createStatement()
+            val rs = stmt.executeQuery("select _id from activity where sub_project_id = $id")
+            while (rs.next()) {
+                st.executeUpdate("delete from activity_related where activity_id = ${rs.getInt(1)}")
+            }
+
+            rs.close()
+            stmt.close()
+
+            st.executeUpdate("delete from activity where sub_project_id = $id")
+            st.close()
+            UtilDao.updateProgress(id)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            try {
+                conn?.close()
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            }
+        }
     }
 
 }

@@ -69,35 +69,15 @@ object ActivityDao {
         try {
             conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
             val stmt = conn.createStatement()
-            val rs = stmt.executeQuery("select * from activity, activity_related where activity.sub_project_id = '$subProjectId' and activity._id = activity_related.activity_id order by activity._id asc")
+            val rs = stmt.executeQuery("select * from activity where activity.sub_project_id = '$subProjectId' order by _id asc")
             val list = mutableListOf<ActivityBean>()
-            var lastActivityId = -1
             while (rs.next()) {
-                val id = rs.getInt(1)
-                if (id == lastActivityId) {
-                    val activityRelatedBean = ActivityRelatedBean()
-                    activityRelatedBean.id = rs.getInt(5)
-                    activityRelatedBean.activity_id = rs.getInt(6)
-                    activityRelatedBean.name = rs.getString(7)
-                    activityRelatedBean.progress = rs.getInt(8)
-                    (list.last().activityRelated as MutableList).add(activityRelatedBean)
-                } else {
-                    val activityBean = ActivityBean()
-                    activityBean.id = id
-                    activityBean.sub_project_id = rs.getInt(2)
-                    activityBean.name = rs.getString(3)
-                    activityBean.progress = rs.getInt(4)
-                    activityBean.activityRelated = mutableListOf()
-                    val activityRelatedBean = ActivityRelatedBean()
-                    activityRelatedBean.id = rs.getInt(5)
-                    activityRelatedBean.activity_id = rs.getInt(6)
-                    activityRelatedBean.name = rs.getString(7)
-                    activityRelatedBean.progress = rs.getInt(8)
-                    (activityBean.activityRelated as MutableList).add(activityRelatedBean)
-                    list.add(activityBean)
-                }
-
-                lastActivityId = id
+                val activityBean = ActivityBean()
+                activityBean.id = rs.getInt(1)
+                activityBean.sub_project_id = rs.getInt(2)
+                activityBean.name = rs.getString(3)
+                activityBean.progress = rs.getInt(4)
+                list.add(activityBean)
             }
 
             rs.close()
@@ -113,6 +93,44 @@ object ActivityDao {
         }
 
         return emptyList()
+    }
+
+    fun update(id: Int, name: String) {
+        var conn: Connection? = null
+        try {
+            conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
+            val ps = conn.prepareStatement("update activity set name = '$name' WHERE _id = $id")
+            ps.executeUpdate()
+            ps.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            try {
+                conn?.close()
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun delete(subProjectId: Int, activityId: Int) {
+        var conn: Connection? = null
+        try {
+            conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
+            val st = conn.createStatement()
+            st.executeUpdate("delete from activity_related where activity_id = $activityId")
+            st.executeUpdate("delete from activity where _id = $activityId")
+            st.close()
+            UtilDao.updateProgress(subProjectId)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            try {
+                conn?.close()
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            }
+        }
     }
 
 }
