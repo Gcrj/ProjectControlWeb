@@ -2,6 +2,7 @@ package com.gcrj.web.servlet
 
 import com.gcrj.web.bean.ActivityRelatedBean
 import com.gcrj.web.bean.ProjectBean
+import com.gcrj.web.bean.SheetListBean
 import com.gcrj.web.bean.XlsProjectBean
 import com.gcrj.web.dao.ActivityRelatedDao
 import com.gcrj.web.dao.UserDao
@@ -32,11 +33,15 @@ class SheetServlet : HttpServlet() {
             "/sheet" -> {
             }
             "/sheetInfo" -> {
-                val pair = UserDao.tokenVerify<List<ProjectBean>>(request)
+                //获取列表
+                //今日是否已上传
+                val pair = UserDao.tokenVerify<SheetListBean>(request)
                 val responseBean = pair.first
                 if (responseBean.status == 1) {
-                    val list = UtilDao.queryAllInfo(pair.second?.id ?: 0)
-                    responseBean.result = list
+                    val bean = SheetListBean()
+                    bean.list = UtilDao.queryAllInfo(pair.second?.id ?: 0)
+                    bean.hasSubmitted = File(Constant.XLS_PATH, "Tech3-周报-${pair.second?.username}_${SimpleDateFormat("yyMMdd").format(Date())}.xlsx").exists()
+                    responseBean.result = bean
                 }
 
                 response.output(responseBean)
@@ -51,6 +56,7 @@ class SheetServlet : HttpServlet() {
     override fun doPost(request: HttpServletRequest, response: HttpServletResponse) {
         when (request.requestURI) {
             "/sheet" -> {
+                //预览
                 val pair = UserDao.tokenVerify<Nothing>(request)
                 val responseBean = pair.first
                 if (responseBean.status == 1) {
@@ -96,6 +102,7 @@ class SheetServlet : HttpServlet() {
                 }
             }
             "/sheetInfo" -> {
+                //提交
                 val pair = UserDao.tokenVerify<Nothing>(request)
                 val responseBean = pair.first
                 if (responseBean.status == 1) {
@@ -123,8 +130,7 @@ class SheetServlet : HttpServlet() {
                     } else {
                         try {
                             val list = Gson().fromJson<List<XlsProjectBean>>(sb.toString(), object : TypeToken<List<XlsProjectBean>>() {}.type)
-                            val path = this::class.java.classLoader.getResource("").path
-                            val dir = File("${path.substring(1, path.indexOf("build"))}xls")
+                            val dir = File(Constant.XLS_PATH)
                             if (!dir.exists()) {
                                 if (!dir.mkdirs()) {
                                     responseBean.status = 0

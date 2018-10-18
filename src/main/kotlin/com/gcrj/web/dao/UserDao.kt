@@ -27,6 +27,7 @@ object UserDao {
                 userBean.username = rs.getString(2)
 //                userBean.password = rs.getString(3)
                 userBean.token = rs.getString(4)
+                userBean.avator = rs.getString(5)
             }
 
             rs.close()
@@ -41,6 +42,42 @@ object UserDao {
         }
 
         return userBean
+    }
+
+    fun updatePassword(id: Int, password: String) {
+        var conn: Connection? = null
+        try {
+            conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
+            val ps = conn.prepareStatement("update user set password = '$password' WHERE _id = $id")
+            ps.executeUpdate()
+            ps.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            try {
+                conn?.close()
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun updateAvator(id: Int, avator: String) {
+        var conn: Connection? = null
+        try {
+            conn = DriverManager.getConnection(Constant.WEB_DB_PATH, null, null)
+            val ps = conn.prepareStatement("update user set avator = '$avator' WHERE _id = $id")
+            ps.executeUpdate()
+            ps.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            try {
+                conn?.close()
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            }
+        }
     }
 
     fun tokenVerify(request: HttpServletRequest): UserBean? {

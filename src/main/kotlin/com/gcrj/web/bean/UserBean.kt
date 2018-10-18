@@ -6,5 +6,6 @@ class UserBean {
     var username: String? = null
     var password: String? = null
     var token: String? = null
+    var avator: String? = null
 
 }

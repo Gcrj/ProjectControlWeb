@@ -25,7 +25,7 @@ object CheckUpdateDao {
                 checkUpdateBean.id = rs.getInt(1)
                 checkUpdateBean.version_name = rs.getString(2)
                 checkUpdateBean.version_code = rs.getInt(3)
-                checkUpdateBean.url = "http://${InetAddress.getLocalHost().hostAddress}:${Constant.PORT}/apk?packageName=$packageName"
+                checkUpdateBean.url = "${Constant.URL_PATH}apk?packageName=$packageName"
                 checkUpdateBean.message = rs.getString(4)
                 checkUpdateBean.force_update = rs.getBoolean(5)
             }

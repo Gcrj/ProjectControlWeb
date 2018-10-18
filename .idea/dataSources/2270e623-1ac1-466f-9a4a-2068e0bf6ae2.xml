@@ -181,7 +181,11 @@
       <Position>4</Position>
       <DataType>TEXT|0s</DataType>
     </column>
-    <key id="51" parent="13">
+    <column id="51" parent="13" name="avator">
+      <Position>5</Position>
+      <DataType>TEXT|0s</DataType>
+    </column>
+    <key id="52" parent="13">
       <ColNames>_id</ColNames>
       <Primary>1</Primary>
     </key>
